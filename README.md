@@ -31,4 +31,4 @@ Please make sure to update tests as appropriate.
 
 ## Authors
 
-Fabian Unger (@FabUnger)
+[@FabUnger](https://github.com/FabUnger)
