@@ -2,19 +2,19 @@ package Data;
 
 public class Node {
 
-    String id;
-    boolean hasChargingStation;
+    private String id;
+    private boolean hasChargingStation;
 
-    Node(String id, boolean hasChargingStation) {
+    public Node(String id, boolean hasChargingStation) {
         this.id = id;
         this.hasChargingStation = hasChargingStation;
     }
 
-    public String GetId() {
+    public String getId() {
         return this.id;
     }
 
-    public boolean GetHasChargingStation()
+    public boolean getHasChargingStation()
     {
         return this.hasChargingStation;
     }

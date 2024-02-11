@@ -7,11 +7,11 @@ import java.util.Map;
 
 public class Graph {
 
-    Map<String, Node> nodes = new HashMap<>();
-    List<Edge> edges = new ArrayList<>();
+    private Map<String, Node> nodes = new HashMap<>();
+    private List<Edge> edges = new ArrayList<>();
 
     public void addNode(Node node) {
-        this.nodes.put(node.id, node);
+        this.nodes.put(node.getId(), node);
     }
 
     public void addEdge(Edge edge) {

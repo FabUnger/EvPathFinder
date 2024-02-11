@@ -2,11 +2,11 @@ package Data;
 
 public class Edge {
 
-    Node source;
-    Node destination;
+    private Node source;
+    private Node destination;
 
-    double duration;
-    double consumption;
+    private double duration;
+    private double consumption;
 
     public Edge(Node source, Node destination, double duration, double consumption){
         this.source = source;
@@ -16,19 +16,19 @@ public class Edge {
         this.consumption = consumption;
     }
 
-    public Node GetSource() {
+    public Node getSource() {
         return this.source;
     }
 
-    public Node GetDestination() {
+    public Node getDestination() {
         return this.destination;
     }
 
-    public double GetDuration() {
+    public double getDuration() {
         return this.duration;
     }
 
-    public double GetConsumption() {
+    public double getConsumption() {
         return this.consumption;
     }
 
