@@ -1,10 +1,11 @@
 package Logic;
 
 import Data.AlgorithmResult;
+import Data.Graph;
 
 public interface Controller {
 
-    void loadGraphFromDataBase();
+    Graph getGraphFromDatabase();
 
     void selectAlgorithm(AlgorithmType type);
 
