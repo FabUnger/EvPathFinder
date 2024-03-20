@@ -1,18 +1,15 @@
 package Persistence;
 
 import Data.Edge;
-import Data.Graph;
 import Data.Node;
 
-import org.neo4j.driver.AuthTokens;
-import org.neo4j.driver.Driver;
-import org.neo4j.driver.GraphDatabase;
-import org.neo4j.driver.Session;
+import org.neo4j.driver.*;
+import org.neo4j.driver.Record;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
+
+import static org.neo4j.driver.Values.parameters;
 
 public class Neo4jReader implements GraphReader {
 
@@ -24,57 +21,98 @@ public class Neo4jReader implements GraphReader {
 
 
     @Override
-    public Graph getGraph() {
-        return null;
-    }
-
-    @Override
     public Node getNodeById(String nodeId) {
         try (Session session = driver.session()) {
             return session.readTransaction(tx -> {
-                var result = tx.run("MATCH (n) WHERE n.id = $id RETURN n.id as id, exists(n.chargingStation) AS hasChargingStation",
+                Result result = tx.run("MATCH (n) WHERE n.id = $id RETURN n.id AS id, n.chargingPower AS chargingPower",
                         parameters("id", nodeId));
                 if (result.hasNext()) {
-                    var record = result.single();
-                    return new Node(record.get("id").asString(), record.get("hasChargingStation").asBoolean());
+                    Record record = result.single();
+                    return new Node(record.get("id").asString(), record.get("chargingPower").asInt());
                 }
                 return null;
             });
+        } catch (Exception e) {
+            System.err.println("Fehler beim Abrufen des Knotens: " + e.getMessage());
+            return null;
         }
     }
 
     @Override
-    public List<Edge> getEdgesFromNode(String nodeId) {
-        List<Edge> edges = new ArrayList<>();
+    public List<Edge> getEdgesFromSourceNode(String nodeId) {
         try (Session session = driver.session()) {
-            session.readTransaction(tx -> {
-                var result = tx.run("MATCH (n {id: $id})-[r]->(m) RETURN n.id AS sourceId, m.id AS destinationId, r.duration AS duration, r.consumption AS consumption",
+            return session.readTransaction(tx -> {
+                Result result = tx.run("MATCH (n {id: $id})-[r]->(m) RETURN m.id AS destinationId, r.duration AS duration, r.consumption AS consumption",
                         parameters("id", nodeId));
-                result.list().forEach(record -> {
-                    Node source = new Node(record.get("sourceId").asString(), false); // Das zweite Argument ist ein Platzhalter
-                    Node destination = new Node(record.get("destinationId").asString(), false); // Das zweite Argument ist ein Platzhalter
-                    edges.add(new Edge(source, destination, record.get("duration").asDouble(), record.get("consumption").asDouble()));
-                });
-                return null;
+                List<Edge> edges = new ArrayList<>();
+                while (result.hasNext()) {
+                    Record record = result.next();
+                    edges.add(new Edge(nodeId, record.get("destinationId").asString(),
+                            record.get("duration").asInt(), record.get("consumption").asFloat()));
+                }
+                return edges;
             });
+        } catch (Exception e) {
+            System.err.println("Fehler beim Abrufen der Kanten vom Ursprungsknoten: " + e.getMessage());
+            return new ArrayList<>();
         }
-        return edges;
     }
 
     @Override
-    public List<Node> getAllNodes() {
-        List<Node> nodes = new ArrayList<>();
+    public Edge getShortestEdgeBetweenNodes(String sourceId, String destinationId) {
         try (Session session = driver.session()) {
-            session.readTransaction(tx -> {
-                var result = tx.run("MATCH (n) RETURN n.id AS id, exists(n.chargingStation) AS hasChargingStation");
-                result.list().forEach(record -> nodes.add(new Node(record.get("id").asString(), record.get("hasChargingStation").asBoolean())));
+            return session.readTransaction(tx -> {
+                Result result = tx.run(
+                              "MATCH (start {id: $sourceId})-[r]->(end {id: $destinationId}) " +
+                                 "RETURN start.id AS sourceId, end.id AS destinationId, r.duration AS duration, r.consumption AS consumption " +
+                                 "ORDER BY r.duration ASC LIMIT 1",
+                        parameters("sourceId", sourceId, "destinationId", destinationId));
+                if (result.hasNext()) {
+                    Record record = result.single();
+                    return new Edge(
+                            record.get("sourceId").asString(),
+                            record.get("destinationId").asString(),
+                            record.get("duration").asInt(),
+                            record.get("consumption").asFloat()
+                    );
+                }
                 return null;
             });
+        } catch (Exception e) {
+            System.err.println("Fehler beim Abrufen der kürzesten Kante zwischen Knoten: " + e.getMessage());
+            return null;
         }
-        return nodes;
     }
 
-    private static Map<String, Object> parameters(String key, Object value) {
-        return Collections.singletonMap(key, value);
+    @Override
+    public List<String> getAllNodeIds() {
+        try (Session session = driver.session()) {
+            return session.readTransaction(tx -> {
+                Result result = tx.run("MATCH (n) RETURN n.id AS id");
+                List<String> nodeIds = new ArrayList<>();
+                while (result.hasNext()) {
+                    Record record = result.next();
+                    nodeIds.add(record.get("id").asString());
+                }
+                return nodeIds;
+            });
+        } catch (Exception e) {
+            System.err.println("Fehler beim Abrufen aller Knoten-IDs: " + e.getMessage());
+            return new ArrayList<>();
+        }
+    }
+
+    @Override
+    public boolean isNodeExisting(String id) {
+        try (Session session = driver.session()) {
+            return session.readTransaction(tx -> {
+                Result result = tx.run("MATCH (n) WHERE n.id = $id RETURN count(n) > 0 AS exists",
+                        parameters("id", id));
+                return result.single().get("exists").asBoolean();
+            });
+        } catch (Exception e) {
+            System.err.println("Fehler beim Überprüfen, ob ein Knoten existiert: " + e.getMessage());
+            return false;
+        }
     }
 }
