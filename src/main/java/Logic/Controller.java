@@ -1,14 +1,17 @@
 package Logic;
 
 import Data.AlgorithmResult;
-import Data.Graph;
+
+import java.util.List;
 
 public interface Controller {
 
-    Graph getGraphFromDatabase();
+    List<String> getAllNodeIds();
+
+    boolean isNodeExisting(String id);
 
     void selectAlgorithm(AlgorithmType type);
 
-    AlgorithmResult executeAlgorithm();
+    AlgorithmResult executeAlgorithm(String startId, String endId, double maxSoc, double initialCharge, int minChargingTime);
 
 }

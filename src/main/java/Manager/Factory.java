@@ -16,7 +16,8 @@ public class Factory {
         Neo4jReader reader = new Neo4jReader(Properties.URI, Properties.USERNAME, Properties.PASSWORD);
 
         List<PathAlgorithm> algorithmList = new ArrayList<>();
-        algorithmList.add(new EvPathAlgorithm());
+        EvPathAlgorithm evPathAlgorithm = new EvPathAlgorithm(reader);
+        algorithmList.add(evPathAlgorithm);
 
         Context context = new Context(algorithmList);
 

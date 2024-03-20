@@ -1,6 +1,7 @@
 package Logic;
 
 import Data.AlgorithmResult;
+import Data.Node;
 
 import java.util.HashMap;
 import java.util.List;
@@ -20,10 +21,6 @@ public class Context {
 
     public void setPathAlgorithm(AlgorithmType type) {
         switch (type) {
-            case DIJKSTRA -> {
-                if (this.pathAlgorithmMap.get(AlgorithmType.DIJKSTRA) != null)
-                    this.selectedPathAlgorithm = pathAlgorithmMap.get(AlgorithmType.DIJKSTRA);
-            }
             case EV -> {
                 if (this.pathAlgorithmMap.get(AlgorithmType.EV) != null)
                     this.selectedPathAlgorithm = pathAlgorithmMap.get(AlgorithmType.EV);
@@ -31,8 +28,8 @@ public class Context {
         }
     }
 
-    public AlgorithmResult executeAlgorithm() {
-        return this.selectedPathAlgorithm.executeAlgorithm();
+    public AlgorithmResult executeAlgorithm(Node start, Node end, double maxSoc, double initialCharge, int minChargingTime) {
+        return this.selectedPathAlgorithm.startAlgorithm(start, end, maxSoc, initialCharge, minChargingTime);
     }
 
 }

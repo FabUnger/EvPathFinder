@@ -1,18 +1,21 @@
 package Data;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class AlgorithmResult {
 
     private int steps;
     private double duration;
-    private List<Node> path;
+    private Map<Node, Double> path;
+    private double travelTime;
 
-    public AlgorithmResult(int steps, double duration, List<Node> path) {
+    public AlgorithmResult(int steps, double duration, Map<Node, Double> path, double travelTime) {
         this.steps = steps;
         this.duration = duration;
-        this.path = new ArrayList<>(path);
+        this.path = new LinkedHashMap<>(path);
+        this.travelTime = travelTime;
     }
 
     public int getSteps() {
@@ -23,7 +26,11 @@ public class AlgorithmResult {
         return this.duration;
     }
 
-    public List<Node> getPath() {
+    public Map<Node, Double> getPath() {
         return this.path;
+    }
+
+    public double getTravelTime() {
+        return this.travelTime;
     }
 }

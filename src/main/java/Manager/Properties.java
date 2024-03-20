@@ -6,6 +6,6 @@ public final class Properties {
 
     public static final String USERNAME = "neo4j";
 
-    public static final String PASSWORD = "";
+    public static final String PASSWORD = "studienarbeit2024";
 
 }

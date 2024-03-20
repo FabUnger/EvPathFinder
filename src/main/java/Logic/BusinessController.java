@@ -1,9 +1,10 @@
 package Logic;
 
 import Data.AlgorithmResult;
-import Data.Graph;
+import Data.Node;
 import Persistence.GraphReader;
-import Persistence.Neo4jReader;
+
+import java.util.List;
 
 public class BusinessController implements Controller {
 
@@ -18,8 +19,14 @@ public class BusinessController implements Controller {
 
 
     @Override
-    public Graph getGraphFromDatabase() {
-        return null;
+    public List<String> getAllNodeIds() {
+        List<String> ids = this.graphReader.getAllNodeIds();
+        return ids;
+    }
+
+    @Override
+    public boolean isNodeExisting(String id) {
+        return this.graphReader.isNodeExisting(id);
     }
 
     @Override
@@ -28,7 +35,9 @@ public class BusinessController implements Controller {
     }
 
     @Override
-    public AlgorithmResult executeAlgorithm() {
-        return this.context.executeAlgorithm();
+    public AlgorithmResult executeAlgorithm(String startId, String endId, double maxSoc, double initialCharge, int minChargingTime) {
+        Node start = this.graphReader.getNodeById(startId);
+        Node end = this.graphReader.getNodeById(endId);
+        return this.context.executeAlgorithm(start, end, maxSoc, initialCharge, minChargingTime);
     }
 }
