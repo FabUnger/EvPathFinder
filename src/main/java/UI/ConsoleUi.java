@@ -2,6 +2,7 @@ package UI;
 
 import Data.AlgorithmResult;
 import Data.Node;
+import Data.VisitedNode;
 import Logic.AlgorithmType;
 import Logic.Controller;
 
@@ -34,7 +35,7 @@ public class ConsoleUi {
 
         while (!exit) {
             printMenu();
-            System.out.print("Eingabe [1/2/3/4/5]: ");
+            System.out.print("Eingabe [1/2/3/4]: ");
 
             int option = this.scanner.nextInt();
             scanner.nextLine();
@@ -52,10 +53,6 @@ public class ConsoleUi {
                     exit = true;
                     System.out.println("Anwendung wird beendet...");
                     break;
-                case 5:
-                    this.controller.selectAlgorithm(AlgorithmType.EV);
-                    this.testAlgorithm();
-                    break;
                 default:
                     System.out.println("Ungültige Auswahl. Bitte versuchen Sie es erneut.");
                     break;
@@ -69,7 +66,6 @@ public class ConsoleUi {
         System.out.println("2. Algorithmus starten");
         System.out.println("3. IDs aller Nodes aus Datenbank ausgeben");
         System.out.println("4. Beenden");
-        System.out.println("5. Test-Lauf");
     }
 
     private void selectAlgorithm() {
@@ -155,11 +151,11 @@ public class ConsoleUi {
         System.out.println("========");
         System.out.println("Route:");
         int nodeCount = 1;
-        for (Map.Entry<Node, Double> node : result.getPath().entrySet()) {
-            if (node.getValue() > 0.0) {
-                System.out.println(nodeCount + ".: " + node.getKey().getId() + " | Ladezeit: " + node.getValue());
+        for (VisitedNode node : result.getPath().getPath()) {
+            if (node.getChargingTime() > 0.0) {
+                System.out.println(nodeCount + ".: " + node.getId() + " | SoC: " + node.getSoc() + " | Ladezeit: " + node.getChargingTime());
             } else {
-                System.out.println(nodeCount + ".: " + node.getKey().getId());
+                System.out.println(nodeCount + ".: " + node.getId() + " | SoC: " + node.getSoc());
             }
             nodeCount++;
         }
@@ -176,38 +172,6 @@ public class ConsoleUi {
             System.out.print(id + ", ");
         }
 
-    }
-
-    private void testAlgorithm() {
-        AlgorithmResult result = this.controller.executeAlgorithm("A", "Z", 70.0, 40.0, 10);
-
-        if (result == null)
-        {
-            System.out.println("Algorithmus konnte nicht ausgefuehrt werden.");
-            return;
-        }
-
-        System.out.println("=======");
-        System.out.println("Analyse");
-        System.out.println("=======");
-        System.out.println("Anzahl Schritte: " + result.getSteps());
-        System.out.println("Dauer: " + result.getDuration());
-
-        System.out.println("========");
-        System.out.println("Ergebnis");
-        System.out.println("========");
-        System.out.println("Route:");
-        int nodeCount = 1;
-        for (Map.Entry<Node, Double> node : result.getPath().entrySet()) {
-            if (node.getValue() > 0.0) {
-                System.out.println(nodeCount + ".: " + node.getKey().getId() + " | Ladezeit: " + node.getValue());
-            } else {
-                System.out.println(nodeCount + ".: " + node.getKey().getId());
-            }
-            nodeCount++;
-        }
-
-        System.out.println("Gesamtreisezeit: " + result.getTravelTime());
     }
 
 }

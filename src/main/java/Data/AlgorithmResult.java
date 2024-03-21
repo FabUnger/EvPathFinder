@@ -1,20 +1,17 @@
 package Data;
 
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 public class AlgorithmResult {
 
     private int steps;
     private double duration;
-    private Map<Node, Double> path;
+    private Path path;
     private double travelTime;
 
-    public AlgorithmResult(int steps, double duration, Map<Node, Double> path, double travelTime) {
+    public AlgorithmResult(int steps, double duration, Path path, double travelTime) {
         this.steps = steps;
         this.duration = duration;
-        this.path = new LinkedHashMap<>(path);
+        this.path = path;
         this.travelTime = travelTime;
     }
 
@@ -26,7 +23,7 @@ public class AlgorithmResult {
         return this.duration;
     }
 
-    public Map<Node, Double> getPath() {
+    public Path getPath() {
         return this.path;
     }
 

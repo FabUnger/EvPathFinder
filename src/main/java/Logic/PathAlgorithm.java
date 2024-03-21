@@ -35,12 +35,6 @@ public abstract class PathAlgorithm {
         return Math.min(newSoc, maxSoc);
     }
 
-    protected double calculateOriginalSoc(double currentSoc, double chargingTime, double chargingPower) {
-        double removedEnergy = (chargingTime / 60.0) * chargingPower;
-        double originalSoc = currentSoc - removedEnergy;
-        return Math.max(originalSoc, 0);
-    }
-
     protected double calculateAdditionalChargeTime(double currentSoc, double necessarySoc, double chargingPower) {
         if (chargingPower == 0.0 || necessarySoc < currentSoc)
             return 0.0;

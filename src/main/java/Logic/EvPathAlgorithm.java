@@ -184,9 +184,9 @@ public class EvPathAlgorithm extends PathAlgorithm {
                             while (currentNode != null) {
                                 String parentNodeId = pathOfU.getParentOfNode(currentNode.getId());
                                 if (parentNodeId.equals(lastStationId) || parentNodeId.isEmpty()) break;
-                                double newSoc = currentNodeSoc + this.reader.getShortestEdgeBetweenNodes(parentNodeId, currentNode.getId()).getConsumption();
+                                currentNodeSoc += this.reader.getShortestEdgeBetweenNodes(parentNodeId, currentNode.getId()).getConsumption();
                                 double newTravelTime = pathOfU.getTravelTimeOfNode(parentNodeId) + lastStationChargingTime - oldChargingTime;
-                                VisitedNode visitedNode = new VisitedNode(parentNodeId, newTravelTime, newSoc, 0.0);
+                                VisitedNode visitedNode = new VisitedNode(parentNodeId, newTravelTime, currentNodeSoc, 0.0);
                                 visitedNodesFromLastStation.add(visitedNode);
                                 currentNode = this.reader.getNodeById(parentNodeId);
                             }
@@ -222,7 +222,7 @@ public class EvPathAlgorithm extends PathAlgorithm {
             }
         }
 
-        return new AlgorithmResult(steps, 0.0, this.createShortestPathForResult(end), pathOfNode.get(end.getId()).getTravelTimeOfNode(end.getId()));
+        return new AlgorithmResult(steps, 0.0, pathOfNode.get(end.getId()), pathOfNode.get(end.getId()).getTravelTimeOfNode(end.getId()));
     }
 
     private void initialize(Node start, double initialCharge) {
@@ -239,20 +239,6 @@ public class EvPathAlgorithm extends PathAlgorithm {
         startPath.add(startNode);
         Path path = new Path(startPath);
         this.pathOfNode.put(startNode.getId(), path);
-    }
-
-    private Map<Node, Double> createShortestPathForResult(Node end) {
-        Map<Node, Double> path = new LinkedHashMap<>();
-
-        List<VisitedNode> visitedNodes = pathOfNode.get(end.getId()).getPath();
-
-        for (VisitedNode visitedNode : visitedNodes) {
-            Node node = this.reader.getNodeById(visitedNode.getId());
-            path.put(node, visitedNode.getChargingTime());
-        }
-
-
-        return path;
     }
 
 }
