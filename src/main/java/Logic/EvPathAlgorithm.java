@@ -67,13 +67,11 @@ public class EvPathAlgorithm extends PathAlgorithm {
                     double totalConsumption = 0;
                     boolean lastStationChargedEnough = true;
 
-                    outerIf:
                     if (!lastStationId.isEmpty()) {
                         if (pathOfU.getSocOfNode(lastStationId) > maxSoc) {
                             lastStationChargedEnough = false;
                         }
                         // Falls letzte Ladestation existiert und noch nicht bis 100 % geladen wurde.
-                        double additionalChargingTime = 0;
                         Node currentNode = u;
                         totalConsumption = consumption;
                         while (!currentNode.getId().equals(lastStationId)) {
@@ -90,11 +88,10 @@ public class EvPathAlgorithm extends PathAlgorithm {
                         if (necessarySoc > maxSoc) {
                             lastStationChargedEnough = false;
                             oldChargingTime = 0.0;
-                            break outerIf;
+                        } else {
+                            double additionalChargingTime = this.calculateAdditionalChargeTime(pathOfU.getSocOfNode(lastStationId), totalConsumption, this.reader.getNodeById(lastStationId).getChargingPower());
+                            lastStationChargingTime = oldChargingTime + additionalChargingTime;
                         }
-
-                        additionalChargingTime = this.calculateAdditionalChargeTime(pathOfU.getSocOfNode(lastStationId), totalConsumption, this.reader.getNodeById(lastStationId).getChargingPower());
-                        lastStationChargingTime = oldChargingTime + additionalChargingTime;
                     }
 
                     if (lastStationId.isEmpty() || !lastStationChargedEnough) {
@@ -116,7 +113,7 @@ public class EvPathAlgorithm extends PathAlgorithm {
                             currentNode = this.reader.getNodeById(parentNodeId);
                         }
 
-                        double chargingTimeNewLastStation = Double.MAX_VALUE;
+                        double newChargingTimeLastStation = Double.MAX_VALUE;
                         for (Map.Entry<String, Double> lastStation : lastStations.entrySet()) {
                             String w = lastStation.getKey();
                             double necessarySoc = lastStation.getValue();
@@ -127,12 +124,12 @@ public class EvPathAlgorithm extends PathAlgorithm {
                                 lastStationId = w;
                                 break;
                             }
-                            double tempChargingTimeNewLastStation = this.calculateAdditionalChargeTime(pathOfU.getSocOfNode(w), necessarySoc, this.reader.getNodeById(w).getChargingPower());
-                            if (tempChargingTimeNewLastStation < chargingTimeNewLastStation) {
-                                chargingTimeNewLastStation = tempChargingTimeNewLastStation;
+                            double tempNewChargingTimeLastStation = this.calculateAdditionalChargeTime(pathOfU.getSocOfNode(w), necessarySoc, this.reader.getNodeById(w).getChargingPower());
+                            if (tempNewChargingTimeLastStation < newChargingTimeLastStation) {
+                                newChargingTimeLastStation = tempNewChargingTimeLastStation;
                                 lastStationId = w;
-                                lastStationChargingTime = chargingTimeNewLastStation;
-                                totalConsumption = lastStation.getValue();
+                                lastStationChargingTime = newChargingTimeLastStation;
+                                totalConsumption = necessarySoc;
                             }
                         }
                     }
@@ -143,13 +140,13 @@ public class EvPathAlgorithm extends PathAlgorithm {
                     }
 
                     if (minChargingTime > lastStationChargingTime) {
-                        lastStationChargingTime = 10.0;
+                        lastStationChargingTime = minChargingTime;
                     }
 
                     double newTravelTimeV = currentTravelTime - oldChargingTime + lastStationChargingTime;
 
                     if (newTravelTimeV < pathOfNode.get(v.getId()).getTravelTimeOfNode(v.getId())) {
-                        // Es wurde ein kuerzerer Weg gefunden: Alle Knoten von v bis p aktualisieren.
+                        // Es wurde ein kuerzerer Weg gefunden: Alle Knoten von v bis lastStation aktualisieren.
                         List<VisitedNode> visitedNodes = new ArrayList<>();
 
                         List<VisitedNode> visitedNodesFromU = pathOfU.getPath();
