@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static Logic.AlgorithmType.EV;
+
 public class Context {
 
     private PathAlgorithm selectedPathAlgorithm;
@@ -22,8 +24,19 @@ public class Context {
     public void setPathAlgorithm(AlgorithmType type) {
         switch (type) {
             case EV -> {
-                if (this.pathAlgorithmMap.get(AlgorithmType.EV) != null)
-                    this.selectedPathAlgorithm = pathAlgorithmMap.get(AlgorithmType.EV);
+                if (this.pathAlgorithmMap.get(EV) != null)
+                    this.selectedPathAlgorithm = pathAlgorithmMap.get(EV);
+            }
+        }
+    }
+
+    public String getSelectedTypeAsString() {
+        switch(this.selectedPathAlgorithm.getType()) {
+            case EV -> {
+                return "EV-Dijkstra";
+            }
+            default -> {
+                return "Kein Algorithmus ausgewählt.";
             }
         }
     }

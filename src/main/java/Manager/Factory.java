@@ -1,9 +1,6 @@
 package Manager;
 
-import Logic.BusinessController;
-import Logic.Context;
-import Logic.EvPathAlgorithm;
-import Logic.PathAlgorithm;
+import Logic.*;
 import Persistence.Neo4jReader;
 import UI.ConsoleUi;
 
@@ -20,6 +17,7 @@ public class Factory {
         algorithmList.add(evPathAlgorithm);
 
         Context context = new Context(algorithmList);
+        context.setPathAlgorithm(AlgorithmType.EV);
 
         BusinessController controller = new BusinessController(context, reader);
 

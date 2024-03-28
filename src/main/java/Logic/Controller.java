@@ -14,4 +14,6 @@ public interface Controller {
 
     AlgorithmResult executeAlgorithm(String startId, String endId, double maxSoc, double initialCharge, int minChargingTime);
 
+    String getSelectedAlgorithmTypeAsString();
+
 }

@@ -62,7 +62,7 @@ public class ConsoleUi {
 
     private void printMenu() {
         System.out.println("\nHauptmenü:");
-        System.out.println("1. Algorithmus auswählen");
+        System.out.println("1. Algorithmus auswählen [Aktuell: " + this.controller.getSelectedAlgorithmTypeAsString() + "]");
         System.out.println("2. Algorithmus starten");
         System.out.println("3. IDs aller Nodes aus Datenbank ausgeben");
         System.out.println("4. Beenden");
@@ -149,18 +149,27 @@ public class ConsoleUi {
         System.out.println("========");
         System.out.println("Ergebnis");
         System.out.println("========");
-        System.out.println("Route:");
-        int nodeCount = 1;
-        for (VisitedNode node : result.getPath().getPath()) {
-            if (node.getChargingTime() > 0.0) {
-                System.out.println(nodeCount + ".: " + node.getId() + " | SoC: " + node.getSoc() + " | Ladezeit: " + node.getChargingTime());
-            } else {
-                System.out.println(nodeCount + ".: " + node.getId() + " | SoC: " + node.getSoc());
+
+        List<VisitedNode> path = result.getPath().getPath();
+
+        if (!path.isEmpty()) {
+            System.out.println("Route:");
+            int nodeCount = 1;
+            for (VisitedNode node : result.getPath().getPath()) {
+                if (node.getChargingTime() > 0.0) {
+                    System.out.println(nodeCount + ".: " + node.getId() + " | SoC: " + node.getSoc() + " | Ladezeit: " + node.getChargingTime());
+                } else {
+                    System.out.println(nodeCount + ".: " + node.getId() + " | SoC: " + node.getSoc());
+                }
+                nodeCount++;
             }
-            nodeCount++;
+
+            System.out.println("Gesamtreisezeit: " + result.getTravelTime());
+        } else {
+            System.out.println("Es konnte keine Route von dem Startknoten " + startId + " zu dem Zielknoten " + endId + " gefunden werden. " +
+                    "Moeglicherweise reichte die Akkukapazitaet hierfuer nicht aus.");
         }
 
-        System.out.println("Gesamtreisezeit: " + result.getTravelTime());
 
     }
 

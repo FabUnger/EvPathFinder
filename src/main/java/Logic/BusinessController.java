@@ -40,4 +40,9 @@ public class BusinessController implements Controller {
         Node end = this.graphReader.getNodeById(endId);
         return this.context.executeAlgorithm(start, end, maxSoc, initialCharge, minChargingTime);
     }
+
+    @Override
+    public String getSelectedAlgorithmTypeAsString() {
+        return this.context.getSelectedTypeAsString();
+    }
 }
