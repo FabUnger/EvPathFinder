@@ -5,6 +5,7 @@ import Data.Node;
 import Data.VisitedNode;
 import Logic.AlgorithmType;
 import Logic.Controller;
+import Persistence.Properties;
 
 import java.util.List;
 import java.util.Map;
@@ -14,6 +15,8 @@ public class ConsoleUi {
 
     private final Controller controller;
     private final Scanner scanner;
+
+    private Properties properties;
 
     public ConsoleUi(Controller controller) {
         this.controller = controller;
@@ -34,8 +37,9 @@ public class ConsoleUi {
         boolean exit = false;
 
         while (!exit) {
+            printCurrentProperties();
             printMenu();
-            System.out.print("Eingabe [1/2/3/4]: ");
+            System.out.print("Eingabe [1/2/3/4/5]: ");
 
             int option = this.scanner.nextInt();
             scanner.nextLine();
@@ -50,6 +54,9 @@ public class ConsoleUi {
                     this.printAllNodeIds();
                     break;
                 case 4:
+                    this.setDatabaseProperties();
+                    break;
+                case 5:
                     exit = true;
                     System.out.println("Anwendung wird beendet...");
                     break;
@@ -60,12 +67,24 @@ public class ConsoleUi {
         }
     }
 
+    private void printCurrentProperties() {
+        System.out.println("\nAktuelle Eigenschaften:");
+        System.out.println("Gewaehlter Algorithmus: " + this.controller.getSelectedAlgorithmTypeAsString());
+        if (this.properties == null) {
+            System.out.println("Datenbank-Eigenschaften noch nicht gesetzt.");
+        } else {
+            System.out.println("Datenbank-URI: " + this.properties.getUri());
+            System.out.println("Datenbank-User: " + this.properties.getUsername());
+        }
+    }
+
     private void printMenu() {
         System.out.println("\nHauptmenü:");
-        System.out.println("1. Algorithmus auswählen [Aktuell: " + this.controller.getSelectedAlgorithmTypeAsString() + "]");
+        System.out.println("1. Algorithmus auswählen");
         System.out.println("2. Algorithmus starten");
         System.out.println("3. IDs aller Nodes aus Datenbank ausgeben");
-        System.out.println("4. Beenden");
+        System.out.println("4. Datenbank-Eigenschaften aendern");
+        System.out.println("5. Beenden");
     }
 
     private void selectAlgorithm() {
@@ -93,6 +112,11 @@ public class ConsoleUi {
     }
 
     private void startAlgorithm() {
+
+        if (properties == null) {
+            System.err.println("Bitte geben Sie zunaechst die Daten fuer die Datenbank in den Einstellungen ein.");
+            return;
+        }
 
         System.out.print("ID des Startknotens eingeben: ");
         String startId = scanner.nextLine();
@@ -181,6 +205,28 @@ public class ConsoleUi {
             System.out.print(id + ", ");
         }
 
+    }
+
+    private void setDatabaseProperties() {
+        System.out.println("\nDatenbank-Eigenschaften eingeben.");
+
+        System.out.print("URI (e fuer 'bolt://localhost:7687'): ");
+        String uri = scanner.nextLine();
+        if (uri.equals("e")) {
+            uri = "bolt://localhost:7687";
+        }
+
+        System.out.print("Username (e fuer 'neo4j'): ");
+        String username = scanner.nextLine();
+        if (username.equals("e")) {
+            username = "neo4j";
+        }
+
+        System.out.print("Passwort: ");
+        String password = scanner.nextLine();
+
+        this.properties = new Properties(uri, username, password);
+        this.controller.initializeDatabase(this.properties);
     }
 
 }

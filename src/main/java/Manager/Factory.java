@@ -10,7 +10,7 @@ import java.util.List;
 public class Factory {
 
     public static void main(String[] args) {
-        Neo4jReader reader = new Neo4jReader(Properties.URI, Properties.USERNAME, Properties.PASSWORD);
+        Neo4jReader reader = new Neo4jReader();
 
         List<PathAlgorithm> algorithmList = new ArrayList<>();
         EvPathAlgorithm evPathAlgorithm = new EvPathAlgorithm(reader);

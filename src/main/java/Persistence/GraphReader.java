@@ -7,6 +7,8 @@ import java.util.List;
 
 public interface GraphReader {
 
+    void setProperties(Properties properties);
+
     Node getNodeById(String nodeId);
 
     List<Edge> getEdgesFromSourceNode(String nodeId);

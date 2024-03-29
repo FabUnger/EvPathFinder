@@ -1,10 +1,13 @@
 package Logic;
 
 import Data.AlgorithmResult;
+import Persistence.Properties;
 
 import java.util.List;
 
 public interface Controller {
+
+    void initializeDatabase(Properties properties);
 
     List<String> getAllNodeIds();
 

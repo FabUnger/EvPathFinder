@@ -13,12 +13,14 @@ import static org.neo4j.driver.Values.parameters;
 
 public class Neo4jReader implements GraphReader {
 
-    private final Driver driver;
+    private Driver driver;
+    private Properties properties;
 
-    public Neo4jReader(String uri, String user, String password) {
-        this.driver = GraphDatabase.driver(uri, AuthTokens.basic(user, password));
+    @Override
+    public void setProperties(Properties properties) {
+        this.properties = properties;
+        this.setDriver();
     }
-
 
     @Override
     public Node getNodeById(String nodeId) {
@@ -113,6 +115,14 @@ public class Neo4jReader implements GraphReader {
         } catch (Exception e) {
             System.err.println("Fehler beim Überprüfen, ob ein Knoten existiert: " + e.getMessage());
             return false;
+        }
+    }
+
+    private void setDriver() {
+        try {
+            this.driver = GraphDatabase.driver(this.properties.getUri(), AuthTokens.basic(this.properties.getUsername(), this.properties.getPassword()));
+        } catch (IllegalArgumentException e) {
+            System.err.println("Bitte geben Sie eine gueltige URI ein.");
         }
     }
 }
