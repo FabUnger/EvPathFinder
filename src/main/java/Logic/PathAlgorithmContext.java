@@ -9,12 +9,12 @@ import java.util.Map;
 
 import static Logic.AlgorithmType.EV;
 
-public class Context {
+public class PathAlgorithmContext {
 
     private PathAlgorithm selectedPathAlgorithm;
     private Map<AlgorithmType, PathAlgorithm> pathAlgorithmMap;
 
-    public Context(List<PathAlgorithm> algorithms) {
+    public PathAlgorithmContext(List<PathAlgorithm> algorithms) {
         this.pathAlgorithmMap = new HashMap<>();
         for (PathAlgorithm alg : algorithms) {
             this.pathAlgorithmMap.put(alg.getType(), alg);

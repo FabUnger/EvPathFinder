@@ -9,10 +9,10 @@ import java.util.List;
 
 public class BusinessController implements Controller {
 
-    private final Context context;
+    private final PathAlgorithmContext context;
     private final GraphReader graphReader;
 
-    public BusinessController(Context context, GraphReader graphReader) {
+    public BusinessController(PathAlgorithmContext context, GraphReader graphReader) {
         this.context = context;
         this.graphReader = graphReader;
     }

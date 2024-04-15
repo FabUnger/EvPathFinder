@@ -16,7 +16,7 @@ public class Factory {
         EvPathAlgorithm evPathAlgorithm = new EvPathAlgorithm(reader);
         algorithmList.add(evPathAlgorithm);
 
-        Context context = new Context(algorithmList);
+        PathAlgorithmContext context = new PathAlgorithmContext(algorithmList);
         context.setPathAlgorithm(AlgorithmType.EV);
 
         BusinessController controller = new BusinessController(context, reader);
