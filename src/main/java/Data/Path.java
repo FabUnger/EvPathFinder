@@ -15,7 +15,7 @@ public class Path {
         return this.path;
     }
 
-    public double getTravelTimeOfNode(String id) {
+    public double getTravelTimeOfNode(VisitedNodeId id) {
         for (VisitedNode node : this.path) {
             if (node.getId().equals(id)) {
                 return node.getTravelTime();
@@ -24,7 +24,7 @@ public class Path {
         return Double.MAX_VALUE;
     }
 
-    public double getSocOfNode(String id) {
+    public double getSocOfNode(VisitedNodeId id) {
         for (VisitedNode node : this.path) {
             if (node.getId().equals(id)) {
                 return node.getSoc();
@@ -33,7 +33,7 @@ public class Path {
         return -1;
     }
 
-    public double getChargingTimeOfNode(String id) {
+    public double getChargingTimeOfNode(VisitedNodeId id) {
         for (VisitedNode node : this.path) {
             if (node.getId().equals(id)) {
                 return node.getChargingTime();
@@ -42,24 +42,29 @@ public class Path {
         return 0.0;
     }
 
-    public String getParentOfNode(String id) {
+    public VisitedNodeId getParentOfNode(VisitedNodeId id) {
         for (VisitedNode node : this.path) {
             if (node.getId().equals(id)) {
                 int index = this.path.indexOf(node);
-                if (index - 1 < 0) return "";
+                if (index - 1 < 0) return null;
                 return this.path.get(index - 1).getId();
             }
         }
-        return "";
+        return null;
     }
 
-    public String getLastStation() {
+    public VisitedNodeId getLastStation() {
         for (int i = this.path.size() - 1; i >= 0; i--) {
             VisitedNode node = this.path.get(i);
             if (node.getChargingTime() > 0.0) {
                 return node.getId();
             }
         }
-        return "";
+        return null;
+    }
+
+    public VisitedNode getLastNode() {
+        int index = path.size() - 1;
+        return this.path.get(index);
     }
 }
