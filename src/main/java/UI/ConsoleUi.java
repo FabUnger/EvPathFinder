@@ -181,9 +181,9 @@ public class ConsoleUi {
             int nodeCount = 1;
             for (VisitedNode node : result.getPath().getPath()) {
                 if (node.getChargingTime() > 0.0) {
-                    System.out.println(nodeCount + ".: " + node.getId() + " | SoC: " + node.getSoc() + " | Ladezeit: " + node.getChargingTime());
+                    System.out.println(nodeCount + ".: " + node.getId().getName() + " | SoC: " + node.getSoc() + " | Ladezeit: " + node.getChargingTime());
                 } else {
-                    System.out.println(nodeCount + ".: " + node.getId() + " | SoC: " + node.getSoc());
+                    System.out.println(nodeCount + ".: " + node.getId().getName() + " | SoC: " + node.getSoc());
                 }
                 nodeCount++;
             }
