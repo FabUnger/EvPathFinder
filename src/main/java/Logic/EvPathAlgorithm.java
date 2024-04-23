@@ -47,8 +47,6 @@ public class EvPathAlgorithm extends PathAlgorithm {
             List<Edge> edgesFromU = this.reader.getEdgesFromSourceNode(u.getId().getName());
             for (Edge edgeFromU : edgesFromU) {
                 Node v = this.reader.getNodeById(edgeFromU.getDestinationId());
-                // if (!queue.containsNodeId(v.getId())) continue;
-
 
                 double duration = edgeFromU.getDuration();
                 double consumption = edgeFromU.getConsumption();
@@ -144,8 +142,6 @@ public class EvPathAlgorithm extends PathAlgorithm {
 
                     double newTravelTimeV = currentTravelTime - oldChargingTime + lastStationChargingTime;
 
-                    /*if (newTravelTimeV < pathOfNode.get(v.getId()).getTravelTimeOfNode(v.getId())) {*/
-                    // Es wurde ein kuerzerer Weg gefunden: Alle Knoten von v bis lastStation aktualisieren.
                     List<VisitedNode> visitedNodes = new ArrayList<>();
 
                     List<VisitedNode> visitedNodesFromU = pathOfU.getPath();
@@ -198,13 +194,11 @@ public class EvPathAlgorithm extends PathAlgorithm {
 
                     Path path = new Path(visitedNodes);
                     pathOfNode.put(visitedNodeV.getId(), path);
-                    /*}*/
 
                 }
                 else {
                     // Ausreichend Energie, um zu v zu gelangen
 
-                    /*if (currentTravelTime < pathOfNode.get(v.getId()).getTravelTimeOfNode(v.getId())) {*/
                     List<VisitedNode> visitedNodes = new ArrayList<>(pathOfU.getPath());
                     VisitedNode visitedNodeV = new VisitedNode(v.getId(), currentTravelTime, currentSoc, 0.0);
 
@@ -214,7 +208,6 @@ public class EvPathAlgorithm extends PathAlgorithm {
 
                     Path path = new Path(visitedNodes);
                     pathOfNode.put(visitedNodeV.getId(), path);
-                    /*}*/
                 }
             }
         }
