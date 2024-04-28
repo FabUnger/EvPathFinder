@@ -67,4 +67,13 @@ public class Path {
         int index = path.size() - 1;
         return this.path.get(index);
     }
+
+    public VisitedNode getNodeById(VisitedNodeId id) {
+        for (VisitedNode node : this.path) {
+            if (node.getId().equals(id)) {
+                return node;
+            }
+        }
+        return null;
+    }
 }

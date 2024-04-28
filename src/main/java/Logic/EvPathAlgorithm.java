@@ -97,10 +97,8 @@ public class EvPathAlgorithm extends PathAlgorithm {
                         totalConsumption = consumption;
                         VisitedNodeId currentNodeId = u.getId();
                         Map<VisitedNodeId, Double> lastStations = new HashMap<>();
-                        while (currentNodeId != null) {
-                            if (currentNodeId.equals(lastStationId))
-                                break;
-                            if (this.reader.getNodeById(currentNodeId.getName()).getChargingPower() > 0 && pathOfU.getSocOfNode(currentNodeId) < 100) {
+                        while (currentNodeId != null && !currentNodeId.equals(lastStationId)) {
+                            if (this.reader.getNodeById(currentNodeId.getName()).getChargingPower() > 0 && pathOfU.getSocOfNode(currentNodeId) + totalConsumption < maxSoc) {
                                 lastStations.put(currentNodeId, totalConsumption);
                             }
                             VisitedNodeId parentNodeId = pathOfU.getParentOfNode(currentNodeId);
@@ -136,7 +134,7 @@ public class EvPathAlgorithm extends PathAlgorithm {
                         continue;
                     }
 
-                    if (minChargingTime > lastStationChargingTime) {
+                    if (minChargingTime > lastStationChargingTime && pathOfU.getNodeById(lastStationId).getSoc() < totalConsumption) {
                         lastStationChargingTime = minChargingTime;
                     }
 
@@ -213,7 +211,8 @@ public class EvPathAlgorithm extends PathAlgorithm {
         }
 
         if (result == null) {
-            return null;
+            result = new Path(new ArrayList<>());
+            return new AlgorithmResult(steps, 0.0, result, 0.0);
         }
         double travelTime = result.getTravelTimeOfNode(result.getLastNode().getId());
         return new AlgorithmResult(steps, 0.0, result, travelTime);
