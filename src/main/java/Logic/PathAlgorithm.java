@@ -31,6 +31,7 @@ public abstract class PathAlgorithm {
 
     protected double calculateNewSoc(double maxSoc, double soc, double chargingTime, double chargingPower) {
         double chargedEnergy = (chargingTime / 60.0) * chargingPower;
+        chargedEnergy = Math.round(chargedEnergy * 100.0) / 100.0;
         double newSoc = soc + chargedEnergy;
         return Math.min(newSoc, maxSoc);
     }
@@ -39,6 +40,8 @@ public abstract class PathAlgorithm {
         if (chargingPower == 0.0 || necessarySoc < currentSoc)
             return 0.0;
         double necessaryChargedEnergy = necessarySoc - currentSoc;
-        return (necessaryChargedEnergy / chargingPower) * 60.0;
+        double chargingTime = (necessaryChargedEnergy / chargingPower) * 60.0;
+        chargingTime = Math.round(chargingTime * 100.0) / 100.0;
+        return chargingTime;
     }
 }
