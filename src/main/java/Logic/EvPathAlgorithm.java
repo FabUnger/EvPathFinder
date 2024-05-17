@@ -174,12 +174,14 @@ public class EvPathAlgorithm extends PathAlgorithm {
                     double newTravelTimeV = currentTravelTime - oldChargingTime + lastStationChargingTime;
 
 
-                    // Uebernehme alle Knoten des Pfades nach u bis zur angepassten/neuen Ladestation
+                    // Erstelle den neuen Weg nach v
                     List<VisitedNode> visitedNodes = new ArrayList<>();
 
                     int lastStationIndex = -1;
                     VisitedNodeId oldLastStationId = null;
+                    // Speichere alle Knoten nach u in einer separaten Liste
                     List<VisitedNode> visitedNodesFromU = pathOfU.getPath();
+                    // ID von der letzten Ladestation erhalten
                     for (int i = visitedNodesFromU.size() - 1; i >= 0; i--) {
                         if (visitedNodesFromU.get(i).getChargingTime() > 0.0) {
                             lastStationIndex = i;
@@ -187,11 +189,14 @@ public class EvPathAlgorithm extends PathAlgorithm {
                             break;
                         }
                     }
+                    // Ueberpruefe, ob bisher eine Ladestation existiert hat und ob eine neue Ladestation hinzugefuegt wurde
                     if (lastStationIndex != -1 && newLastStationAdded) {
+                        // Falls bisher eine Ladestation existiert hat und eine neue Ladestation hinzugefuegt wurde
+                        // fuege alle Knoten von Start bis zu der zuletzt geladenen Ladestation zum Weg hinzu
                         for (int i = 0; i < lastStationIndex; i++) {
                             visitedNodes.add(visitedNodesFromU.get(i));
                         }
-                        // Berechne Verbrauch von bisher letzter Ladestation zu neuer letzten Ladestation
+                        // Berechne Verbrauch von bisher letzter Ladestation zu neuer Ladestation
                         double consumptionFromOldStationToNewStation = 0.0;
                         for (int i = lastStationIndex; i < visitedNodesFromU.size() - 1; i++) {
                             consumptionFromOldStationToNewStation += this.reader.getShortestEdgeBetweenNodes(visitedNodesFromU.get(i).getId().getName(), visitedNodesFromU.get(i+1).getId().getName()).getConsumption();
@@ -199,6 +204,7 @@ public class EvPathAlgorithm extends PathAlgorithm {
                                 break;
                             }
                         }
+                        // Erstelle Werte fuer die Ladestation bei der bisher zuletzt geladen wurde und erstelle einen neuen VisitedNode fuer diese und fuege sie zum Weg hinzu
                         VisitedNode lastNodeBeforeLastStation = visitedNodesFromU.get(lastStationIndex - 1);
                         double oldLastStationChargingPower = this.reader.getNodeById(oldLastStationId.getName()).getChargingPower();
                         double oldLastStationSocWithoutCharging = lastNodeBeforeLastStation.getSoc() - this.reader.getShortestEdgeBetweenNodes(lastNodeBeforeLastStation.getId().getName(), visitedNodesFromU.get(lastStationIndex).getId().getName()).getConsumption();
@@ -210,6 +216,7 @@ public class EvPathAlgorithm extends PathAlgorithm {
                         double oldLastStationSocAfterCharging = this.calculateNewSoc(maxSoc, oldLastStationSocWithoutCharging, oldLastStationChargingTime, oldLastStationChargingPower);
                         VisitedNode oldLastStation = new VisitedNode(oldLastStationId.getName(), oldLastStationTravelTime, oldLastStationSocAfterCharging, oldLastStationChargingTime);
                         visitedNodes.add(oldLastStation);
+                        // Fuege alle Knoten von der zuletzt geladenen Ladestation zur neu hinzgefuegten Ladestation zum Weg hinzu
                         for (int i = lastStationIndex; i < visitedNodesFromU.size() - 1; i++) {
                             VisitedNode node = visitedNodes.get(i);
                             VisitedNode successor = visitedNodesFromU.get(i + 1);
@@ -221,8 +228,9 @@ public class EvPathAlgorithm extends PathAlgorithm {
                             VisitedNode visitedNode = new VisitedNode(successor.getId().getName(), node.getTravelTime() + edgeDuration, node.getSoc() - edgeConsumption, successor.getChargingTime());
                             visitedNodes.add(visitedNode);
                         }
-
                     } else {
+                        // Falls bisher keine Ladestation existiert hat oder keine neue Ladestation hinzugefuegt wurde
+                        // Uebernehme alle Knoten start bis zur neuen Ladestation von dem Weg nach u
                         for (VisitedNode node : visitedNodesFromU) {
                             if (node.getId().equals(lastStationId)) {
                                 break;
@@ -233,7 +241,7 @@ public class EvPathAlgorithm extends PathAlgorithm {
 
                     VisitedNode lastNodeBeforeStation = visitedNodes.get(visitedNodes.size() - 1);
 
-                    // Erstelle ein neues VisitedNode-Objekt fuer die Ladestation
+                    // Erstelle ein neues VisitedNode-Objekt fuer die neue Ladestation
                     double lastStationTravelTime = lastNodeBeforeStation.getTravelTime() + this.reader.getShortestEdgeBetweenNodes(lastNodeBeforeStation.getId().getName(), lastStationId.getName()).getDuration() + lastStationChargingTime;
                     double lastStationSocWithoutCharging = lastNodeBeforeStation.getSoc() - this.reader.getShortestEdgeBetweenNodes(lastNodeBeforeStation.getId().getName(), lastStationId.getName()).getConsumption();
                     double lastStationSocAfterCharging = this.calculateNewSoc(maxSoc, lastStationSocWithoutCharging, lastStationChargingTime, this.reader.getNodeById(lastStationId.getName()).getChargingPower());
