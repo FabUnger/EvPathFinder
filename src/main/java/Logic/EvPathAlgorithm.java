@@ -263,11 +263,14 @@ public class EvPathAlgorithm extends PathAlgorithm {
                     double newTravelTimeV = newU.getTravelTime() + this.reader.getShortestEdgeBetweenNodes(newU.getId().getName(), v.getId()).getDuration();
                     VisitedNode visitedNodeV = new VisitedNode(v.getId(), newTravelTimeV, newSocV, 0.0);
 
-                    // Vervollstaendige die Liste durch Hinzufuegen von v und erstelle ein Path-Objekt und fuege dieses zu pathOfNode hinzu, sowie den VisitedNode von v zur Queue
-                    visitedNodes.add(visitedNodeV);
-                    Path path = new Path(visitedNodes);
-                    pathOfNode.put(visitedNodeV.getId(), path);
-                    queue.put(visitedNodeV.getId(), newTravelTimeV);
+                    // Ueberpruefe, ob der neue Zustand von v schlechter als irgendein anderer Zustand in V ist
+                    if (this.checkIfCurrentNodeIsBetter(visitedNodeV)) {
+                        // Vervollstaendige die Liste durch Hinzufuegen von v und erstelle ein Path-Objekt und fuege dieses zu pathOfNode hinzu, sowie den VisitedNode von v zur Queue
+                        visitedNodes.add(visitedNodeV);
+                        Path path = new Path(visitedNodes);
+                        pathOfNode.put(visitedNodeV.getId(), path);
+                        queue.put(visitedNodeV.getId(), newTravelTimeV);
+                    }
                 }
                 else {
                     // Ladestand bei v groesser als 0, genuegend Energie vorhanden, um v erreichen zu koennen, sodass nicht geladen werden muss
@@ -276,11 +279,14 @@ public class EvPathAlgorithm extends PathAlgorithm {
                     List<VisitedNode> visitedNodes = new ArrayList<>(pathOfU.getPath());
                     // Erstelle ein VisitedNode-Objekt fuer v, fuege dieses sowohl zur Liste fuer den neuen Pfad als auch zur Queue hinzu
                     VisitedNode visitedNodeV = new VisitedNode(v.getId(), currentTravelTime, currentSoc, 0.0);
-                    visitedNodes.add(visitedNodeV);
-                    queue.put(visitedNodeV.getId(), currentTravelTime);
-                    // Erstelle einen neuen Pfad fuer den Knoten v
-                    Path path = new Path(visitedNodes);
-                    pathOfNode.put(visitedNodeV.getId(), path);
+                    // Ueberpruefe, ob der neue Zustand von v schlechter als irgendein anderer Zustand in V ist
+                    if (this.checkIfCurrentNodeIsBetter(visitedNodeV)) {
+                        visitedNodes.add(visitedNodeV);
+                        queue.put(visitedNodeV.getId(), currentTravelTime);
+                        // Erstelle einen neuen Pfad fuer den Knoten v
+                        Path path = new Path(visitedNodes);
+                        pathOfNode.put(visitedNodeV.getId(), path);
+                    }
                 }
             }
         }
@@ -307,6 +313,31 @@ public class EvPathAlgorithm extends PathAlgorithm {
         Path path = new Path(startPath);
         // Fuege Pfad des Startknotens zu allen paths hinzu
         this.pathOfNode.put(startNode.getId(), path);
+    }
+
+    private boolean checkIfCurrentNodeIsBetter(VisitedNode visitedNode) {
+        for (Map.Entry<VisitedNodeId, Path> entry : pathOfNode.entrySet()) {
+            VisitedNodeId nodeId = entry.getKey();
+            Path path = entry.getValue();
+
+            // Prüfen, ob der Name des aktuellen Knotens mit dem Namen des Knotens im Path übereinstimmt
+            if (nodeId.getName().equals(visitedNode.getId().getName())) {
+                VisitedNode nodeInPath = path.getNodeById(nodeId);
+
+                // Wenn der Knoten gefunden wurde, vergleichen Sie die Reisezeit und den SOC
+                if (nodeInPath != null) {
+                    if (visitedNode.getTravelTime() > nodeInPath.getTravelTime() && visitedNode.getSoc() < nodeInPath.getSoc()) {
+                        // Der aktuelle Knoten ist schlechter oder gleich in Bezug auf Reisezeit und SOC
+                        return false;
+                    } else {
+                        // Der aktuelle Knoten ist besser in Bezug auf Reisezeit und SOC
+                        continue;
+                    }
+                }
+            }
+        }
+        // Der aktuelle Knoten ist besser als alle Knoten mit demselben Namen im Path
+        return true;
     }
 
 }
