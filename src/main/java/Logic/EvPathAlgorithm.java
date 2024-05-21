@@ -170,9 +170,6 @@ public class EvPathAlgorithm extends PathAlgorithm {
                         lastStationChargingTime = minChargingTime;
                     }
 
-                    // Berechne die neue Reisezeit von Start nach v
-                    double newTravelTimeV = currentTravelTime - oldChargingTime + lastStationChargingTime;
-
 
                     // Erstelle den neuen Weg nach v
                     List<VisitedNode> visitedNodes = new ArrayList<>();
@@ -262,7 +259,8 @@ public class EvPathAlgorithm extends PathAlgorithm {
 
                     // Erstelle ein neues VisitedNode-Objekt fuer v
                     VisitedNode newU = visitedNodes.get(visitedNodes.size() - 1);
-                    newTravelTimeV = newU.getTravelTime() + this.reader.getShortestEdgeBetweenNodes(newU.getId().getName(), v.getId()).getDuration();
+                    // Berechne die neue Reisezeit von Start nach v
+                    double newTravelTimeV = newU.getTravelTime() + this.reader.getShortestEdgeBetweenNodes(newU.getId().getName(), v.getId()).getDuration();
                     VisitedNode visitedNodeV = new VisitedNode(v.getId(), newTravelTimeV, newSocV, 0.0);
 
                     // Vervollstaendige die Liste durch Hinzufuegen von v und erstelle ein Path-Objekt und fuege dieses zu pathOfNode hinzu, sowie den VisitedNode von v zur Queue
