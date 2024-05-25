@@ -329,10 +329,8 @@ public class EvPathAlgorithm extends PathAlgorithm {
                     if (visitedNode.getTravelTime() > nodeInPath.getTravelTime() && visitedNode.getSoc() < nodeInPath.getSoc()) {
                         // Der aktuelle Knoten ist schlechter oder gleich in Bezug auf Reisezeit und SOC
                         return false;
-                    } else {
-                        // Der aktuelle Knoten ist besser in Bezug auf Reisezeit und SOC
-                        continue;
                     }
+                    // else: Der aktuelle Knoten ist besser in Bezug auf Reisezeit und SOC
                 }
             }
         }
