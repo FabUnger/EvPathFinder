@@ -14,7 +14,7 @@ public class EvPathAlgorithm extends PathAlgorithm {
 
     public EvPathAlgorithm(GraphReader reader) {
         super(reader);
-        type = AlgorithmType.EV;
+        type = AlgorithmType.DIBASEM;
     }
 
     @Override

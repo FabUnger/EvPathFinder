@@ -103,7 +103,7 @@ public class ConsoleUi {
 
         while (!exit) {
             System.out.println("\nAlgorithmus waehlen:");
-            System.out.println("1. EV-Dijkstra");
+            System.out.println("1. DiBaSEM");
             System.out.println("2. Zurueck zum Menue");
             System.out.print("Eingabe [1/2]: ");
             int option = 0;
@@ -121,7 +121,7 @@ public class ConsoleUi {
             scanner.nextLine();
             switch (option) {
                 case 1:
-                    this.controller.selectAlgorithm(AlgorithmType.EV);
+                    this.controller.selectAlgorithm(AlgorithmType.DIBASEM);
                     break;
                 case 2:
                     exit = true;

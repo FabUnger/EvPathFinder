@@ -17,7 +17,7 @@ public class Factory {
         algorithmList.add(evPathAlgorithm);
 
         PathAlgorithmContext context = new PathAlgorithmContext(algorithmList);
-        context.setPathAlgorithm(AlgorithmType.EV);
+        context.setPathAlgorithm(AlgorithmType.DIBASEM);
 
         BusinessController controller = new BusinessController(context, reader);
 

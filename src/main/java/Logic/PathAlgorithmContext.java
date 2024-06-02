@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static Logic.AlgorithmType.EV;
+import static Logic.AlgorithmType.DIBASEM;
 
 public class PathAlgorithmContext {
 
@@ -23,17 +23,17 @@ public class PathAlgorithmContext {
 
     public void setPathAlgorithm(AlgorithmType type) {
         switch (type) {
-            case EV -> {
-                if (this.pathAlgorithmMap.get(EV) != null)
-                    this.selectedPathAlgorithm = pathAlgorithmMap.get(EV);
+            case DIBASEM -> {
+                if (this.pathAlgorithmMap.get(DIBASEM) != null)
+                    this.selectedPathAlgorithm = pathAlgorithmMap.get(DIBASEM);
             }
         }
     }
 
     public String getSelectedTypeAsString() {
         switch(this.selectedPathAlgorithm.getType()) {
-            case EV -> {
-                return "EV-Dijkstra";
+            case DIBASEM -> {
+                return "DiBaSEM";
             }
             default -> {
                 return "Kein Algorithmus ausgewählt.";
